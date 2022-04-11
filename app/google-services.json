@@ -1,0 +1,76 @@
+{
+  "project_info": {
+    "project_number": "984829096294",
+    "project_id": "menorcabeaches-52f29",
+    "storage_bucket": "menorcabeaches-52f29.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:984829096294:android:34ad58529a3a1d7cc1d8a7",
+        "android_client_info": {
+          "package_name": "menorca.android.menorcabeaches"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "984829096294-ikvpc4f684e58o4988c5ou5ponu75j7p.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "menorca.android.menorcabeaches",
+            "certificate_hash": "7763b46c477b91b29ced9d47c1a26077c97ca63a"
+          }
+        },
+        {
+          "client_id": "984829096294-r43kioelslk3smtbja3bnicsl1qijeba.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBYfdoS-XZZu1NAn0SueL_dySx1hDIJ43E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "984829096294-r43kioelslk3smtbja3bnicsl1qijeba.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:984829096294:android:9ffa8ffae7c188adc1d8a7",
+        "android_client_info": {
+          "package_name": "org.android.menorcabeaches"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "984829096294-r43kioelslk3smtbja3bnicsl1qijeba.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBYfdoS-XZZu1NAn0SueL_dySx1hDIJ43E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "984829096294-r43kioelslk3smtbja3bnicsl1qijeba.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
