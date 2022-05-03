@@ -1,6 +1,4 @@
 <resources>
     <string name="app_name">MenorcaBeaches</string>
     <string name="or">or</string>
-    <string name="default_web_client_id">0</string>
-    <string name="your_web_client_id">0</string>
 </resources>
