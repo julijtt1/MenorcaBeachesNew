@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -19,12 +20,14 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.squareup.picasso.Picasso;
 
 import org.android.menorcabeaches.R;
 import org.android.menorcabeaches.fragment.ProfileFragment;
 import org.android.menorcabeaches.model.User;
 
 import java.util.List;
+
 
 public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder>{
 
@@ -99,7 +102,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder>{
 
         public TextView userName;
         public TextView name;
-        public CircleImageView imageView;
+        public ImageView imageView;
         public Button follow;
 
         public ViewHolder(View itemView) {

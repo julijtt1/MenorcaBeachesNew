@@ -13,4 +13,12 @@
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
     </style>
+
+    <color name="purple_500">#884ECA</color>
+    <color name="purple_700">#4F2D75</color>
+    <color name="white">#FFFFFF</color>
+    <color name="teal_200">#4AD3BE</color>
+    <color name="teal_700">#2F8578</color>
+    <color name="black">#000000</color>
+    <color name="purple_200">#AB7DDF</color>
 </resources>

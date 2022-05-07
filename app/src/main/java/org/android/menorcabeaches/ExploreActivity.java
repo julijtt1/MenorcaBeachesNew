@@ -14,7 +14,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import org.android.menorcabeaches.adapter.PostAdapter;
-import org.android.menorcabeaches.adapter.postAdapter;
 import org.android.menorcabeaches.model.Post;
 
 import java.util.ArrayList;

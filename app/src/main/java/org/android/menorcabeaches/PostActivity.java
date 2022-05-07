@@ -26,19 +26,20 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.StorageTask;
+import com.theartofdev.edmodo.cropper.CropImage;
 
 import java.util.HashMap;
 
 public class PostActivity extends AppCompatActivity {
 
-    Uri imatge;
+    Uri image;
     String url;
     StorageTask task;
     StorageReference sr;
 
-    ImageView tancar, imatge_afagida;
+    ImageView tancar, addedImage;
     TextView publicacio;
-    EditText descripcio;
+    EditText description;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,11 +47,11 @@ public class PostActivity extends AppCompatActivity {
         setContentView(R.layout.activity_post);
 
         tancar = findViewById(R.id.close);
-        imatge_afagida = findViewById(R.id.image_added);
+        addedImage = findViewById(R.id.image_added);
         publicacio = findViewById(R.id.post);
-        descripcio = findViewById(R.id.description);
+        description = findViewById(R.id.description);
 
-        sr = FirebaseStorage.getInstance().getReference("Publicacions");
+        sr = FirebaseStorage.getInstance().getReference("Posts");
 
         tancar.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -81,14 +82,14 @@ public class PostActivity extends AppCompatActivity {
 
     private void pujarFoto(){
         final ProgressDialog progressDialog = new ProgressDialog(this);
-        progressDialog.setMessage("Penjant");
+        progressDialog.setMessage("Uploading");
         progressDialog.show();
 
-        if (imatge != null){
+        if (image != null){
             final StorageReference referenciaArxiu = sr.child(System.currentTimeMillis()
-                    + "." + getFileExtension(imatge));
+                    + "." + getFileExtension(image));
 
-            task = referenciaArxiu.putFile(imatge);
+            task = referenciaArxiu.putFile(image);
             task.continueWithTask(new Continuation() {
                 @Override
                 public Object then(@NonNull Task task) throws Exception {
@@ -104,24 +105,24 @@ public class PostActivity extends AppCompatActivity {
                         Uri descarga = task.getResult();
                         url = descarga.toString();
 
-                        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Publicacions");
+                        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Posts");
 
-                        String idpublicacio = reference.push().getKey();
+                        String postId = reference.push().getKey();
 
                         HashMap<String, Object> hashMap = new HashMap<>();
-                        hashMap.put("idpublicacio", idpublicacio);
-                        hashMap.put("imatge", url);
-                        hashMap.put("descripcio", descripcio.getText().toString());
-                        hashMap.put("usuari", FirebaseAuth.getInstance().getCurrentUser().getUid());
+                        hashMap.put("id", postId);
+                        hashMap.put("img_path", url);
+                        hashMap.put("description", description.getText().toString());
+                        hashMap.put("user_id", FirebaseAuth.getInstance().getCurrentUser().getUid());
 
-                        reference.child(idpublicacio).setValue(hashMap);
+                        reference.child(postId).setValue(hashMap);
 
                         progressDialog.dismiss();
 
                         startActivity(new Intent(PostActivity.this, MainActivity.class));
                         finish();
                     } else {
-                        Toast.makeText(PostActivity.this, "No s'ha pogut pujar",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(PostActivity.this, "Could not upload",Toast.LENGTH_SHORT).show();
                     }
                 }
             }).addOnFailureListener(new OnFailureListener() {
@@ -131,7 +132,7 @@ public class PostActivity extends AppCompatActivity {
                 }
             });
         } else {
-            Toast.makeText(PostActivity.this, "No hi ha imatge",Toast.LENGTH_SHORT).show();
+            Toast.makeText(PostActivity.this, "No image selected",Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -141,11 +142,11 @@ public class PostActivity extends AppCompatActivity {
 
         if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE && resultCode == RESULT_OK){
             CropImage.ActivityResult result = CropImage.getActivityResult(data);
-            imatge = result.getUri();
+            image = result.getUri();
 
-            imatge_afagida.setImageURI(imatge);
+            addedImage.setImageURI(image);
         } else {
-            Toast.makeText(this, "Alguna cosa no ha anat bé", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Something went wrong", Toast.LENGTH_SHORT).show();
             startActivity(new Intent(PostActivity.this, MainActivity.class));
             finish();
         }

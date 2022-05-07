@@ -18,12 +18,14 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.squareup.picasso.Picasso;
 
 import org.android.menorcabeaches.R;
 import org.android.menorcabeaches.model.Post;
 import org.android.menorcabeaches.model.User;
 
 import java.util.List;
+
 
 public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
 
@@ -47,8 +49,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
     public void onBindViewHolder(@NonNull final ViewHolder holder, int position) {
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         final Post Post = Posts.get(position);
-        //new GlideImage(holder.image, Post.getimage());
-        Glide.with(context).load(Post.getImage()).into(holder.image);
+
+        Picasso.get().load(Post.getImage()).into(holder.image);
 
         if (Post.getDescription().equals("")) {
             holder.description.setVisibility(View.GONE);
@@ -92,7 +94,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
                             dataSnapshot.child("name").getValue().toString(), dataSnapshot.child("image_path").getValue().toString(),
                             dataSnapshot.child("description").getValue().toString());
                     try {
-                        Glide.with(context).load(u.getImage()).into(profileImage);
+                        Picasso.get().load(u.getImage()).into(profileImage);
                         //new GlideImage(profileImage,u.getimage());
                     } catch (Exception e){
                         Log.e("glide",e.getMessage());
@@ -167,7 +169,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
 
         public ImageView image, like, comentari, guardar;
         public TextView userName, likes, user, description, commentaris;
-        public CircleImageView image_perfil;
+        public ImageView image_perfil;
 
         public ViewHolder(View itemView) {
             super(itemView);
