@@ -31,7 +31,10 @@ android {
 apply plugin: 'com.android.application'
 
 dependencies {
-    api 'com.theartofdev.edmodo:android-image-cropper:2.8.+'
+    implementation 'de.hdodenhof:circleimageview:3.1.0'
+    implementation 'com.github.CanHub:Android-Image-Cropper:4.2.1'
+    implementation "com.theartofdev.edmodo:android-image-cropper:2.8.0"
+    api 'com.theartofdev.edmodo:android-image-cropper:2.8.0'
     implementation 'com.google.firebase:firebase-auth'
     implementation 'com.google.firebase:firebase-firestore'
     implementation platform('com.google.firebase:firebase-bom:29.3.1')

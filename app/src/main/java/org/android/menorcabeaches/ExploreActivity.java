@@ -58,7 +58,7 @@ public class ExploreActivity extends AppCompatActivity {
                     userList.add(dataSnapshot.getKey());
                 }
 
-                readPosts();
+                followerList();
 
             }
 
@@ -69,7 +69,7 @@ public class ExploreActivity extends AppCompatActivity {
         });
     }
 
-    private void readPosts(){
+    private void followerList(){
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Posts");
 
         reference.addValueEventListener(new ValueEventListener() {
@@ -78,8 +78,8 @@ public class ExploreActivity extends AppCompatActivity {
                 Posts.clear();
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()){
                     //Post Post = dataSnapshot.getValue(Post.class);
-                    Post Post = new Post(dataSnapshot.child("idPost").getValue().toString(),dataSnapshot.child("image").getValue().toString(),
-                            dataSnapshot.child("description").getValue().toString(),dataSnapshot.child("user").getValue().toString());
+                    Post Post = new Post(dataSnapshot.child("id").getValue().toString(),dataSnapshot.child("img_path").getValue().toString(),
+                            dataSnapshot.child("description").getValue().toString(),dataSnapshot.child("user_id").getValue().toString());
                     for (String id : userList){
                         if (Post.getId().equals(id)){
                             Posts.add(Post);

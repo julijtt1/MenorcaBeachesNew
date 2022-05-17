@@ -26,6 +26,8 @@ import org.android.menorcabeaches.model.User;
 
 import java.util.List;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+
 
 public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
 
@@ -59,7 +61,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
             holder.description.setText(Post.getDescription());
         }
 
-        infouser(holder.image_perfil, holder.userName, holder.user, Post.getUserName());
+        infoUser(holder.profile_image, holder.userName, holder.user, Post.getUserName());
         setLiked(Post.getId(), holder.like);
         namebreLikes(holder.likes, Post.getId());
 
@@ -82,8 +84,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
 
     }
 
-    private void infouser(final ImageView profileImage, final TextView userName, final TextView user, String iduser){
-        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("users").child(iduser);
+    private void infoUser(final ImageView profileImage, final TextView userName, final TextView user, String iduser){
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Users").child(iduser);
 
         reference.addValueEventListener(new ValueEventListener() {
             @Override
@@ -91,19 +93,17 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
                 //user u = snapshot.getValue(user.class);
                 try {
                     User u = new User(dataSnapshot.child("id").getValue().toString(), dataSnapshot.child("user").getValue().toString(),
-                            dataSnapshot.child("name").getValue().toString(), dataSnapshot.child("image_path").getValue().toString(),
+                            dataSnapshot.child("name").getValue().toString(), dataSnapshot.child("img_path").getValue().toString(),
                             dataSnapshot.child("description").getValue().toString());
                     try {
                         Picasso.get().load(u.getImage()).into(profileImage);
-                        //new GlideImage(profileImage,u.getimage());
                     } catch (Exception e){
-                        Log.e("glide",e.getMessage());
+                        Log.e("Picasso",e.getMessage());
                     }
 
 
-                    //Picasso.get().load(u.getimage()).into(profileImage);
+                    Picasso.get().load(u.getImage()).into(profileImage);
                     userName.setText(u.getName());
-                    Log.e("prova", u.getImage() + "");
                     user.setText(u.getUsername());
                 } catch (NullPointerException e){
                     Log.e("error",e.getMessage()+" "+e.getCause());
@@ -167,22 +167,22 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
 
     public class ViewHolder extends RecyclerView.ViewHolder {
 
-        public ImageView image, like, comentari, guardar;
-        public TextView userName, likes, user, description, commentaris;
-        public ImageView image_perfil;
+        public ImageView image, like, comment, guardar;
+        public TextView userName, likes, user, description, comments;
+        public CircleImageView profile_image;
 
         public ViewHolder(View itemView) {
             super(itemView);
 
-            image_perfil = itemView.findViewById(R.id.image_profile_post);
+            profile_image = itemView.findViewById(R.id.image_profile_post);
             image = itemView.findViewById(R.id.post_image);
             like = itemView.findViewById(R.id.like_post);
-            comentari = itemView.findViewById(R.id.comment_post);
+            comment = itemView.findViewById(R.id.comment_post);
             guardar = itemView.findViewById(R.id.save_post);
             likes = itemView.findViewById(R.id.likes_post);
             user = itemView.findViewById(R.id.user_post);
             description = itemView.findViewById(R.id.description_post);
-            commentaris = itemView.findViewById(R.id.comments_post);
+            comments = itemView.findViewById(R.id.comments_post);
             userName = itemView.findViewById(R.id.username_post);
         }
     }

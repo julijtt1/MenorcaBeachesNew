@@ -3,8 +3,10 @@ package org.android.menorcabeaches;
 import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.webkit.MimeTypeMap;
 import android.widget.EditText;
@@ -27,6 +29,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.StorageTask;
 import com.theartofdev.edmodo.cropper.CropImage;
+import com.theartofdev.edmodo.cropper.CropImageView;
 
 import java.util.HashMap;
 
@@ -37,9 +40,11 @@ public class PostActivity extends AppCompatActivity {
     StorageTask task;
     StorageReference sr;
 
-    ImageView tancar, addedImage;
-    TextView publicacio;
+    ImageView tancar;
+    ImageView addedImage;
+    TextView post;
     EditText description;
+    private Uri uri;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,7 +53,7 @@ public class PostActivity extends AppCompatActivity {
 
         tancar = findViewById(R.id.close);
         addedImage = findViewById(R.id.image_added);
-        publicacio = findViewById(R.id.post);
+        post = findViewById(R.id.post);
         description = findViewById(R.id.description);
 
         sr = FirebaseStorage.getInstance().getReference("Posts");
@@ -61,10 +66,10 @@ public class PostActivity extends AppCompatActivity {
             }
         });
 
-        publicacio.setOnClickListener(new View.OnClickListener() {
+        post.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                pujarFoto();
+                uploadPost();
             }
         });
 
@@ -80,7 +85,7 @@ public class PostActivity extends AppCompatActivity {
         return mimeTypeMap.getExtensionFromMimeType(contentResolver.getType(uri));
     }
 
-    private void pujarFoto(){
+    private void uploadPost(){
         final ProgressDialog progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Uploading");
         progressDialog.show();
@@ -139,12 +144,13 @@ public class PostActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
+        Log.e("aaaaa", String.valueOf(requestCode));
         if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE && resultCode == RESULT_OK){
             CropImage.ActivityResult result = CropImage.getActivityResult(data);
             image = result.getUri();
-
             addedImage.setImageURI(image);
+
+
         } else {
             Toast.makeText(this, "Something went wrong", Toast.LENGTH_SHORT).show();
             startActivity(new Intent(PostActivity.this, MainActivity.class));

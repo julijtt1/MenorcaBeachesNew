@@ -51,10 +51,11 @@
         android:orientation="vertical">
 
       <ImageView
+          android:id="@+id/image_added"
           android:layout_width="match_parent"
-          android:layout_height="200dp"
-          android:layout_gravity="center"
-          android:id="@+id/image_added"/>
+          android:layout_height="236dp"
+          android:layout_weight="1" />
+
 
       <EditText
           android:layout_width="match_parent"

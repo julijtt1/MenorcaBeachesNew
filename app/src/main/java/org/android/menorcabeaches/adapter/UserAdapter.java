@@ -59,9 +59,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder>{
         holder.userName.setText(User.getUsername());
         holder.name.setText(User.getName());
         Picasso.get().load(User.getImage()).into(holder.imageView);
-        //Log.e("prova 32", User.getimage()+" "+User.getname()+User.getuserName());
-        //Picasso.get().load(User.getimage()).into(holder.imageView);
-        estafollowed(User.getId(), holder.follow);
+        isFollowed(User.getId(), holder.follow);
 
         if (User.getId().equals(firebaseUser.getUid())){
             holder.follow.setVisibility(View.GONE);
@@ -113,13 +111,13 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder>{
             follow = itemView.findViewById(R.id.btn_followSearch);
         }
     }
-    private void estafollowed(final String id, final Button button){
+    private void isFollowed(final String id, final Button button){
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("Follow").child(firebaseUser.getUid()).child("followed");
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.child(id).exists()){
-                    button.setText("followed");
+                    button.setText("following");
                 } else {
                     button.setText("Follow");
                 }

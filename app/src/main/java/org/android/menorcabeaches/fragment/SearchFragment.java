@@ -96,7 +96,7 @@ public class SearchFragment extends Fragment {
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()){
                     //User u = dataSnapshot.getValue(User.class);
                     User u = new User(dataSnapshot.child("id").getValue().toString(), dataSnapshot.child("User").getValue().toString(),
-                            dataSnapshot.child("name").getValue().toString(), dataSnapshot.child("image_path").getValue().toString(),
+                            dataSnapshot.child("name").getValue().toString(), dataSnapshot.child("img_path").getValue().toString(),
                             dataSnapshot.child("description").getValue().toString());
                     Users.add(u);
                 }
@@ -120,8 +120,8 @@ public class SearchFragment extends Fragment {
                     Users.clear();
                     for (DataSnapshot dataSnapshot : snapshot.getChildren()){
                         //User u = dataSnapshot.getValue(User.class);
-                        User u = new User(dataSnapshot.child("id").getValue().toString(), dataSnapshot.child("User").getValue().toString(),
-                                dataSnapshot.child("name").getValue().toString(), dataSnapshot.child("image_path").getValue().toString(),
+                        User u = new User(dataSnapshot.child("id").getValue().toString(), dataSnapshot.child("user").getValue().toString(),
+                                dataSnapshot.child("name").getValue().toString(), dataSnapshot.child("img_path").getValue().toString(),
                                 dataSnapshot.child("description").getValue().toString());
                         Users.add(u);
                     }
