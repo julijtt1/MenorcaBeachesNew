@@ -8,13 +8,13 @@ import android.view.MenuItem;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.ListFragment;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import org.android.menorcabeaches.fragment.HomeFragment;
+import org.android.menorcabeaches.fragment.ListFragment;
 import org.android.menorcabeaches.fragment.ProfileFragment;
 import org.android.menorcabeaches.fragment.SearchFragment;
 

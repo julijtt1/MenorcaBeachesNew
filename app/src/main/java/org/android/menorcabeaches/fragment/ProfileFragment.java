@@ -81,12 +81,12 @@ public class ProfileFragment extends Fragment {
 
                 } else if (btn.equals("follow")){
 
-                    FirebaseDatabase.getInstance().getReference().child("Follow").child(firebaseUser.getUid()).child("followed").child(profileid).setValue(true);
+                    FirebaseDatabase.getInstance().getReference().child("Follow").child(firebaseUser.getUid()).child("following").child(profileid).setValue(true);
                     FirebaseDatabase.getInstance().getReference().child("Follow").child(profileid).child("followers").child(firebaseUser.getUid()).setValue(true);
 
                 } else if (btn.equals("following")){
 
-                    FirebaseDatabase.getInstance().getReference().child("Follow").child(firebaseUser.getUid()).child("followed").child(profileid).setValue(true);
+                    FirebaseDatabase.getInstance().getReference().child("Follow").child(firebaseUser.getUid()).child("following").child(profileid).setValue(true);
                     FirebaseDatabase.getInstance().getReference().child("Follow").child(profileid).child("followers").child(firebaseUser.getUid()).removeValue();
 
                 }
@@ -102,10 +102,10 @@ public class ProfileFragment extends Fragment {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (getContext() == null)
                     return;
-                
+
                 User user = snapshot.getValue(User.class);
                 Picasso.get().load(user.getImg_path()).into(image_profile);
-                username.setText(user.getUser_id());
+                username.setText(user.getName());
                 fullname.setText(user.getName());
                 bio.setText(user.getDescription());
             }
@@ -179,7 +179,6 @@ public class ProfileFragment extends Fragment {
                 int i = 0;
                 for (DataSnapshot s : snapshot.getChildren()){
                     Post post = s.getValue(Post.class);
-                    Log.e("ereas", post.toString());
                     if (post.getUser_id().equals(profileid)){
                         i++;
                     }
