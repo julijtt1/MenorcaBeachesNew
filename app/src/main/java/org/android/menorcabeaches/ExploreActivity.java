@@ -79,7 +79,8 @@ public class ExploreActivity extends AppCompatActivity {
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()){
                     //Post Post = dataSnapshot.getValue(Post.class);
                     Post Post = new Post(dataSnapshot.child("id").getValue().toString(),dataSnapshot.child("img_path").getValue().toString(),
-                            dataSnapshot.child("description").getValue().toString(),dataSnapshot.child("user_id").getValue().toString());
+                            dataSnapshot.child("description").getValue().toString(),dataSnapshot.child("user_id").getValue().toString(),
+                            dataSnapshot.child("beach_id").getValue().toString(), Double.parseDouble(dataSnapshot.child("rating").getValue().toString()));
                     for (String id : userList){
                         if (Post.getId().equals(id)){
                             Posts.add(Post);

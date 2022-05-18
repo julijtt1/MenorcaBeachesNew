@@ -49,12 +49,12 @@ public class HomeFragment extends Fragment {
         PostAdapter = new PostAdapter(getContext(), posts);
         recyclerView.setAdapter(PostAdapter);
 
-        estaSeguint();
+        isFollowing();
 
         return view;
     }
 
-    private void estaSeguint(){
+    private void isFollowing(){
         followerList = new ArrayList<>();
 
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Follow")
@@ -89,12 +89,11 @@ public class HomeFragment extends Fragment {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 posts.clear();
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()){
-                    //post post = dataSnapshot.getValue(post.class);
-                    Log.e("asa", dataSnapshot.toString());
                     Post post = new Post(dataSnapshot.child("id").getValue().toString(),dataSnapshot.child("img_path").getValue().toString(),
-                            dataSnapshot.child("description").getValue().toString(),dataSnapshot.child("user_id").getValue().toString());
+                            dataSnapshot.child("description").getValue().toString(),dataSnapshot.child("user_id").getValue().toString(),
+                            dataSnapshot.child("beach_id").getValue().toString(), Double.parseDouble(dataSnapshot.child("rating").getValue().toString()));
                     //for (String id : followerList){
-                        //if (post.getUserName().equals(id)){
+                        //if (post.getUser_id().equals(id)){
                             posts.add(post);
                         //}
                     //}

@@ -3,6 +3,8 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Clase/DAW2 2.0/DAW2/MenorcaBeaches/app/src/main/res/drawable-anydpi/ic_add.xml" value="0.3675" />
+        <entry key="..\:/Clase/DAW2 2.0/DAW2/MenorcaBeaches/app/src/main/res/drawable-anydpi/ic_added_list.xml" value="0.3675" />
         <entry key="..\:/Clase/DAW2 2.0/DAW2/MenorcaBeaches/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.196" />
         <entry key="..\:/Clase/DAW2 2.0/DAW2/MenorcaBeaches/app/src/main/res/drawable-v24/roundcorner.xml" value="0.3675" />
         <entry key="..\:/Clase/DAW2 2.0/DAW2/MenorcaBeaches/app/src/main/res/drawable/button_background.xml" value="0.3675" />
@@ -15,7 +17,7 @@
         <entry key="..\:/Clase/DAW2 2.0/DAW2/MenorcaBeaches/app/src/main/res/layout/activity_home.xml" value="0.18802083333333333" />
         <entry key="..\:/Clase/DAW2 2.0/DAW2/MenorcaBeaches/app/src/main/res/layout/activity_login.xml" value="0.18802083333333333" />
         <entry key="..\:/Clase/DAW2 2.0/DAW2/MenorcaBeaches/app/src/main/res/layout/activity_main.xml" value="0.18802083333333333" />
-        <entry key="..\:/Clase/DAW2 2.0/DAW2/MenorcaBeaches/app/src/main/res/layout/activity_post.xml" value="0.18802083333333333" />
+        <entry key="..\:/Clase/DAW2 2.0/DAW2/MenorcaBeaches/app/src/main/res/layout/activity_post.xml" value="0.4074492099322799" />
         <entry key="..\:/Clase/DAW2 2.0/DAW2/MenorcaBeaches/app/src/main/res/layout/fragment_explore.xml" value="0.35778985507246375" />
         <entry key="..\:/Clase/DAW2 2.0/DAW2/MenorcaBeaches/app/src/main/res/layout/fragment_home.xml" value="0.18802083333333333" />
         <entry key="..\:/Clase/DAW2 2.0/DAW2/MenorcaBeaches/app/src/main/res/layout/fragment_list.xml" value="0.18802083333333333" />

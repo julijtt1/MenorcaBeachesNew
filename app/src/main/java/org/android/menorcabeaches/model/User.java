@@ -2,7 +2,7 @@ package org.android.menorcabeaches.model;
 
 public class User {
     private String id;
-    private String userName;
+    private String user_id;
     private String name;
     private String img_path;
     private String description;
@@ -11,19 +11,12 @@ public class User {
 
     public User(String id, String user, String name, String img_path, String description) {
         this.id = id;
-        this.userName = user;
+        this.user_id = user;
         this.name = name;
         this.img_path = img_path;
         this.description = description;
     }
 
-    public User(User value) {
-        this.id = value.getId();
-        this.userName = value.getUsername();
-        this.name = value.getName();
-        this.img_path = value.getImage();
-        this.description = value.getDescription();
-    }
 
     public String getId() {
         return id;
@@ -33,12 +26,12 @@ public class User {
         this.id = id;
     }
 
-    public String getUsername() {
-        return userName;
+    public String getUser_id() {
+        return user_id;
     }
 
-    public void setUsername(String userName) {
-        this.userName = userName;
+    public void setUser_id(String user_id) {
+        this.user_id = user_id;
     }
 
     public String getName() {
@@ -49,11 +42,11 @@ public class User {
         this.name = name;
     }
 
-    public String getImage() {
+    public String getImg_path() {
         return img_path;
     }
 
-    public void setImage(String img_path) {
+    public void setImg_path(String img_path) {
         this.img_path = img_path;
     }
 
@@ -63,5 +56,16 @@ public class User {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id='" + id + '\'' +
+                ", user_id='" + user_id + '\'' +
+                ", name='" + name + '\'' +
+                ", img_path='" + img_path + '\'' +
+                ", description='" + description + '\'' +
+                '}';
     }
 }

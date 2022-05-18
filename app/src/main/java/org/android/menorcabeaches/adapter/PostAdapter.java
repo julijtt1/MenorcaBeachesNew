@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -50,38 +51,119 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder holder, int position) {
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        final Post Post = Posts.get(position);
+        final Post post = Posts.get(position);
 
-        Picasso.get().load(Post.getImage()).into(holder.image);
+        Picasso.get().load(post.getImg_path()).into(holder.image);
 
-        if (Post.getDescription().equals("")) {
+        if (post.getDescription().equals("")) {
             holder.description.setVisibility(View.GONE);
         } else {
             holder.description.setVisibility(View.VISIBLE);
-            holder.description.setText(Post.getDescription());
+            holder.description.setText(post.getDescription());
         }
 
-        infoUser(holder.profile_image, holder.userName, holder.user, Post.getUserName());
-        setLiked(Post.getId(), holder.like);
-        namebreLikes(holder.likes, Post.getId());
+        infoUser(holder.profile_image, holder.userName, holder.user, post.getUser_id());
+        setLiked(post.getId(), holder.like);
+        setSaved(post.getId(), holder.save);
+        setRating(post.getId(), Double.parseDouble(post.getRating().toString()), holder.rating);
+        infoBeach(post.getBeach_id(), holder.beachName);
+        setAddedToList(post.getBeach_id(), holder.add_list_post);
+        numberOfLikes(holder.likes, post.getId());
 
         holder.like.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (holder.like.getTag().equals("like")){
                     FirebaseDatabase.getInstance().getReference().child("Likes")
-                            .child(Post.getId())
+                            .child(post.getId())
                             .child(firebaseUser.getUid())
                             .setValue(true);
                 } else {
                     FirebaseDatabase.getInstance().getReference().child("Likes")
-                            .child(Post.getId())
+                            .child(post.getId())
                             .child(firebaseUser.getUid())
                             .removeValue();
                 }
             }
         });
 
+        holder.save.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (holder.save.getTag().equals("save")){
+                    FirebaseDatabase.getInstance().getReference().child("SavedPosts")
+                            .child(firebaseUser.getUid())
+                            .child(post.getId())
+                            .setValue(true);
+                } else {
+                    FirebaseDatabase.getInstance().getReference().child("SavedPosts")
+                            .child(firebaseUser.getUid())
+                            .child(post.getId())
+                            .removeValue();
+                }
+            }
+        });
+
+        holder.add_list_post.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (holder.add_list_post.getTag().equals("addToList")){
+                    FirebaseDatabase.getInstance().getReference().child("Lists")
+                            .child(firebaseUser.getUid())
+                            .child(post.getBeach_id())
+                            .setValue(post.getBeach_id());
+                } else {
+                    FirebaseDatabase.getInstance().getReference().child("Lists")
+                            .child(firebaseUser.getUid())
+                            .child(post.getBeach_id())
+                            .removeValue();
+                }
+            }
+        });
+
+    }
+
+    private void setRating(String idPost, double rating, RatingBar ratingBar) {
+
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference()
+                .child("Posts")
+                .child(idPost);
+
+        reference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if(snapshot.child("rating").exists()){
+                    ratingBar.setRating((float) rating);
+                } else {
+                    ratingBar.setRating(0);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+
+    private void infoBeach(String beachId, final TextView beachName){
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Beaches").child(beachId);
+
+        reference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(dataSnapshot.child("name").exists()){
+                    beachName.setText(dataSnapshot.child("name").getValue().toString());
+                } else {
+                    beachName.setText(" ");
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
     }
 
     private void infoUser(final ImageView profileImage, final TextView userName, final TextView user, String iduser){
@@ -96,15 +178,15 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
                             dataSnapshot.child("name").getValue().toString(), dataSnapshot.child("img_path").getValue().toString(),
                             dataSnapshot.child("description").getValue().toString());
                     try {
-                        Picasso.get().load(u.getImage()).into(profileImage);
+                        Picasso.get().load(u.getImg_path()).into(profileImage);
                     } catch (Exception e){
                         Log.e("Picasso",e.getMessage());
                     }
 
 
-                    Picasso.get().load(u.getImage()).into(profileImage);
+                    Picasso.get().load(u.getImg_path()).into(profileImage);
                     userName.setText(u.getName());
-                    user.setText(u.getUsername());
+                    user.setText(u.getUser_id());
                 } catch (NullPointerException e){
                     Log.e("error",e.getMessage()+" "+e.getCause());
                 }
@@ -143,7 +225,61 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
         });
     }
 
-    private void namebreLikes(final TextView likes, String idPost){
+    private void setSaved(String idPost, final ImageView imageView){
+
+        final FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference()
+                .child("SavedPosts")
+                .child(firebaseUser.getUid());
+
+        reference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if(snapshot.child(idPost).exists()){
+                    imageView.setImageResource(R.drawable.ic_saved);
+                    imageView.setTag("saved");
+                } else {
+                    imageView.setImageResource(R.drawable.ic_save);
+                    imageView.setTag("save");
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+
+    private void setAddedToList(String idBeach, final ImageView imageView){
+
+        final FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference()
+                .child("Lists")
+                .child(firebaseUser.getUid());
+        reference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                Log.e("error", idBeach);
+                if(snapshot.child(idBeach).exists()){
+                    imageView.setImageResource(R.drawable.ic_added_list);
+                    imageView.setTag("addedToList");
+                } else {
+                    imageView.setImageResource(R.drawable.ic_add_list);
+                    imageView.setTag("addToList");
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+
+    private void numberOfLikes(final TextView likes, String idPost){
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("Likes")
                 .child(idPost);
 
@@ -167,9 +303,10 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
 
     public class ViewHolder extends RecyclerView.ViewHolder {
 
-        public ImageView image, like, comment, guardar;
-        public TextView userName, likes, user, description, comments;
+        public ImageView image, like, comment, save, add_list_post;
+        public TextView userName, likes, user, description, comments, beachName;
         public CircleImageView profile_image;
+        public RatingBar rating;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -178,12 +315,15 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
             image = itemView.findViewById(R.id.post_image);
             like = itemView.findViewById(R.id.like_post);
             comment = itemView.findViewById(R.id.comment_post);
-            guardar = itemView.findViewById(R.id.save_post);
+            save = itemView.findViewById(R.id.save_post);
+            add_list_post = itemView.findViewById(R.id.add_list_post);
             likes = itemView.findViewById(R.id.likes_post);
             user = itemView.findViewById(R.id.user_post);
             description = itemView.findViewById(R.id.description_post);
             comments = itemView.findViewById(R.id.comments_post);
             userName = itemView.findViewById(R.id.username_post);
+            beachName = itemView.findViewById(R.id.beach_post);
+            rating = itemView.findViewById(R.id.rating);
         }
     }
 

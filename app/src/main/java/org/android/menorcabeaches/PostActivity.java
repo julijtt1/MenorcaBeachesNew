@@ -3,6 +3,7 @@ package org.android.menorcabeaches;
 import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
@@ -11,54 +12,82 @@ import android.view.View;
 import android.webkit.MimeTypeMap;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.fragment.app.FragmentActivity;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.StorageTask;
+import com.squareup.picasso.Picasso;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
+import org.android.menorcabeaches.model.User;
+
 import java.util.HashMap;
 
-public class PostActivity extends AppCompatActivity {
+public class PostActivity extends AppCompatActivity implements
+        OnMapReadyCallback, GoogleMap.OnMapClickListener {
+
+    private GoogleMap mapa;
+    private final LatLng Ramis = new LatLng(39.88757852693164, 4.254813013003855);
 
     Uri image;
     String url;
+    String beachLocation;
+    String beachId;
     StorageTask task;
     StorageReference sr;
 
-    ImageView tancar;
+    ImageView close;
     ImageView addedImage;
     TextView post;
     EditText description;
-    private Uri uri;
+    RatingBar rating;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_post);
 
-        tancar = findViewById(R.id.close);
+        SupportMapFragment mapFragment = (SupportMapFragment)
+                getSupportFragmentManager().findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
+
+        close = findViewById(R.id.close);
         addedImage = findViewById(R.id.image_added);
         post = findViewById(R.id.post);
         description = findViewById(R.id.description);
+        rating = findViewById(R.id.rating);
 
         sr = FirebaseStorage.getInstance().getReference("Posts");
 
-        tancar.setOnClickListener(new View.OnClickListener() {
+        close.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(PostActivity.this, MainActivity.class));
@@ -90,42 +119,65 @@ public class PostActivity extends AppCompatActivity {
         progressDialog.setMessage("Uploading");
         progressDialog.show();
 
-        if (image != null){
-            final StorageReference referenciaArxiu = sr.child(System.currentTimeMillis()
+        if (image != null & beachLocation != null){
+            final StorageReference reference = sr.child(System.currentTimeMillis()
                     + "." + getFileExtension(image));
 
-            task = referenciaArxiu.putFile(image);
+            task = reference.putFile(image);
             task.continueWithTask(new Continuation() {
                 @Override
                 public Object then(@NonNull Task task) throws Exception {
                     if (!task.isSuccessful()){
                         throw task.getException();
                     }
-                    return referenciaArxiu.getDownloadUrl();
+                    return reference.getDownloadUrl();
                 }
             }).addOnCompleteListener(new OnCompleteListener<Uri>() {
                 @Override
                 public void onComplete(@NonNull Task<Uri> task) {
                     if (task.isSuccessful()){
-                        Uri descarga = task.getResult();
-                        url = descarga.toString();
+                        DatabaseReference referenceB = FirebaseDatabase.getInstance().getReference()
+                                .child("Beaches");
+                        referenceB.addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                try {
+                                    for (DataSnapshot ds : dataSnapshot.getChildren()){
+                                        if(ds.child("geo").getValue().equals(beachLocation)) {
+                                            beachId = ds.getKey();
+                                            break;
+                                        }
+                                    }
+                                    Uri descarga = task.getResult();
+                                    url = descarga.toString();
 
-                        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Posts");
+                                    DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Posts");
 
-                        String postId = reference.push().getKey();
+                                    String postId = reference.push().getKey();
 
-                        HashMap<String, Object> hashMap = new HashMap<>();
-                        hashMap.put("id", postId);
-                        hashMap.put("img_path", url);
-                        hashMap.put("description", description.getText().toString());
-                        hashMap.put("user_id", FirebaseAuth.getInstance().getCurrentUser().getUid());
+                                    HashMap<String, Object> hashMap = new HashMap<>();
+                                    hashMap.put("id", postId);
+                                    hashMap.put("img_path", url);
+                                    hashMap.put("description", description.getText().toString());
+                                    hashMap.put("user_id", FirebaseAuth.getInstance().getCurrentUser().getUid());
+                                    hashMap.put("beach_id", beachId);
+                                    hashMap.put("rating", rating.getRating());
 
-                        reference.child(postId).setValue(hashMap);
+                                    reference.child(postId).setValue(hashMap);
 
-                        progressDialog.dismiss();
+                                    progressDialog.dismiss();
 
-                        startActivity(new Intent(PostActivity.this, MainActivity.class));
-                        finish();
+                                    startActivity(new Intent(PostActivity.this, MainActivity.class));
+                                    finish();
+
+                                } catch (NullPointerException e){
+                                    Log.e("error",e.getMessage()+" "+e.getCause());
+                                }
+                            }
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {}
+                        });
+
                     } else {
                         Toast.makeText(PostActivity.this, "Could not upload",Toast.LENGTH_SHORT).show();
                     }
@@ -156,5 +208,62 @@ public class PostActivity extends AppCompatActivity {
             startActivity(new Intent(PostActivity.this, MainActivity.class));
             finish();
         }
+    }
+    @Override public void onMapReady(GoogleMap googleMap) {
+        mapa = googleMap;
+        mapa.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+        mapa.getUiSettings().setZoomControlsEnabled(false);
+        mapa.moveCamera(CameraUpdateFactory.newLatLngZoom(Ramis, 15));
+
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Beaches");
+
+        reference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                //user u = snapshot.getValue(user.class);
+                try {
+
+                    for (DataSnapshot ds : dataSnapshot.getChildren()){
+                        String[] latlong =  ds.child("geo").getValue().toString().split(",");
+                        double latitude = Double.parseDouble(latlong[0]);
+                        double longitude = Double.parseDouble(latlong[1]);
+                        LatLng location = new LatLng(latitude, longitude);
+                        mapa.addMarker(new MarkerOptions()
+                                .position(location)
+                                .title(String.valueOf(ds.child("name").getValue()))
+                                .anchor(0.5f, 0.5f));
+                    }
+
+
+                } catch (NullPointerException e){
+                    Log.e("error",e.getMessage()+" "+e.getCause());
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
+        mapa.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                LatLng latLng = marker.getPosition();
+                beachLocation = latLng.latitude + ", " + latLng.longitude;
+                return false;
+            }
+        });
+        if (ActivityCompat.checkSelfPermission(this,
+                android.Manifest.permission.ACCESS_FINE_LOCATION) ==
+                PackageManager.PERMISSION_GRANTED) {
+            mapa.setMyLocationEnabled(true);
+            mapa.getUiSettings().setCompassEnabled(true);
+        }
+    }
+
+
+    @Override public void onMapClick(LatLng puntPitjat) {
+
     }
 }

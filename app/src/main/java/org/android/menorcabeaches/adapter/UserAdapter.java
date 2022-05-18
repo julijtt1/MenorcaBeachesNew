@@ -2,6 +2,7 @@ package org.android.menorcabeaches.adapter;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -56,9 +57,9 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder>{
 
         holder.follow.setVisibility(View.VISIBLE);
 
-        holder.userName.setText(User.getUsername());
+        holder.userName.setText(User.getUser_id());
         holder.name.setText(User.getName());
-        Picasso.get().load(User.getImage()).into(holder.imageView);
+        Picasso.get().load(User.getImg_path()).into(holder.imageView);
         isFollowed(User.getId(), holder.follow);
 
         if (User.getId().equals(firebaseUser.getUid())){
@@ -72,7 +73,11 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder>{
                 editor.putString("id", User.getId());
                 editor.apply();
 
-                ((FragmentActivity)context).getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new ProfileFragment()).commit();
+                ProfileFragment fragment = new ProfileFragment();
+                Bundle bundle = new Bundle();
+                bundle.putString("user_id", User.getId());
+                fragment.setArguments(bundle);
+                ((FragmentActivity)context).getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, fragment).commit();
             }
         });
 
