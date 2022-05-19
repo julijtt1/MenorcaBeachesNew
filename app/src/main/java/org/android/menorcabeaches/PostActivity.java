@@ -4,7 +4,6 @@ import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -20,13 +19,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
-import androidx.fragment.app.FragmentActivity;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -43,11 +40,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.StorageTask;
-import com.squareup.picasso.Picasso;
 import com.theartofdev.edmodo.cropper.CropImage;
-import com.theartofdev.edmodo.cropper.CropImageView;
-
-import org.android.menorcabeaches.model.User;
 
 import java.util.HashMap;
 
@@ -55,7 +48,7 @@ public class PostActivity extends AppCompatActivity implements
         OnMapReadyCallback, GoogleMap.OnMapClickListener {
 
     private GoogleMap mapa;
-    private final LatLng Ramis = new LatLng(39.88757852693164, 4.254813013003855);
+    private final LatLng menorca = new LatLng(39.967815654570565, 4.110750066334182);
 
     Uri image;
     String url;
@@ -213,7 +206,7 @@ public class PostActivity extends AppCompatActivity implements
         mapa = googleMap;
         mapa.setMapType(GoogleMap.MAP_TYPE_NORMAL);
         mapa.getUiSettings().setZoomControlsEnabled(false);
-        mapa.moveCamera(CameraUpdateFactory.newLatLngZoom(Ramis, 15));
+        mapa.moveCamera(CameraUpdateFactory.newLatLngZoom(menorca, 10));
 
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Beaches");
 

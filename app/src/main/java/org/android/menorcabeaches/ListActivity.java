@@ -1,17 +1,12 @@
-package org.android.menorcabeaches.fragment;
+package org.android.menorcabeaches;
 
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -19,48 +14,40 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import org.android.menorcabeaches.R;
+public class ListActivity extends AppCompatActivity implements
+        OnMapReadyCallback, GoogleMap.OnMapClickListener {
 
-public class ListFragment extends Fragment implements
-        OnMapReadyCallback, GoogleMap.OnMapClickListener{
+    private GoogleMap map;
+    private final LatLng menorca = new LatLng(39.967815654570565, 4.110750066334182);
 
-private GoogleMap map;
-private final LatLng menorca = new LatLng(39.967815654570565, 4.110750066334182);
-private FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
 
-@Override
-public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                         Bundle savedInstanceState) {
-    View view = inflater.inflate(R.layout.fragment_list, container, false);
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_list);
 
-    SupportMapFragment mMapFragment = SupportMapFragment.newInstance();
-    FragmentTransaction fragmentTransaction =
-            getChildFragmentManager().beginTransaction();
-    fragmentTransaction.add(R.id.map, mMapFragment);
-    fragmentTransaction.commit();
-    mMapFragment.getMapAsync(this);
+        SupportMapFragment mapFragment = (SupportMapFragment)
+                getSupportFragmentManager().findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
 
-    return view;
-}
+    }
+
 
     @Override public void onMapReady(GoogleMap googleMap) {
         map = googleMap;
         map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
         map.getUiSettings().setZoomControlsEnabled(false);
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(menorca, 10));
-        DatabaseReference reference1 = FirebaseDatabase.getInstance().getReference("Lists").child(firebaseUser.getUid());
 
-        DatabaseReference reference2 = FirebaseDatabase.getInstance().getReference("Beaches");
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Beaches");
 
-        reference1.addValueEventListener(new ValueEventListener() {
+        reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 //user u = snapshot.getValue(user.class);
@@ -89,7 +76,7 @@ public View onCreateView(LayoutInflater inflater, ViewGroup container,
             }
         });
 
-        if (ActivityCompat.checkSelfPermission(getContext(),
+        if (ActivityCompat.checkSelfPermission(this,
                 android.Manifest.permission.ACCESS_FINE_LOCATION) ==
                 PackageManager.PERMISSION_GRANTED) {
             map.setMyLocationEnabled(true);
