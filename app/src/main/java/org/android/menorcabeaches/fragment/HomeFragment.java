@@ -35,8 +35,7 @@ public class HomeFragment extends Fragment {
     private List<String> followerList;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
         recyclerView = view.findViewById(R.id.recycler_view_home);
@@ -48,6 +47,7 @@ public class HomeFragment extends Fragment {
         posts = new ArrayList<>();
         PostAdapter = new PostAdapter(getContext(), posts);
         recyclerView.setAdapter(PostAdapter);
+
 
         isFollowing();
 
@@ -83,7 +83,6 @@ public class HomeFragment extends Fragment {
 
     private void readPosts(){
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Posts");
-        Log.e("asa", reference.toString());
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {

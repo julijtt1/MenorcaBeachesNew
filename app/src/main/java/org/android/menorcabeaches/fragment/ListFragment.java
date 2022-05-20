@@ -56,25 +56,38 @@ public View onCreateView(LayoutInflater inflater, ViewGroup container,
         map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
         map.getUiSettings().setZoomControlsEnabled(false);
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(menorca, 10));
-        DatabaseReference reference1 = FirebaseDatabase.getInstance().getReference("Lists").child(firebaseUser.getUid());
 
-        DatabaseReference reference2 = FirebaseDatabase.getInstance().getReference("Beaches");
+        DatabaseReference referenceList = FirebaseDatabase.getInstance().getReference("Lists").child(firebaseUser.getUid());;
 
-        reference1.addValueEventListener(new ValueEventListener() {
+        referenceList.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                //user u = snapshot.getValue(user.class);
+
                 try {
 
+                    DatabaseReference referenceBeaches;
                     for (DataSnapshot ds : dataSnapshot.getChildren()){
-                        String[] latlong =  ds.child("geo").getValue().toString().split(",");
-                        double latitude = Double.parseDouble(latlong[0]);
-                        double longitude = Double.parseDouble(latlong[1]);
-                        LatLng location = new LatLng(latitude, longitude);
-                        map.addMarker(new MarkerOptions()
-                                .position(location)
-                                .title(String.valueOf(ds.child("name").getValue()))
-                                .anchor(0.5f, 0.5f));
+                        referenceBeaches = FirebaseDatabase.getInstance().getReference("Beaches").child(ds.getValue().toString());
+                        referenceBeaches.addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                String[] latlong =  snapshot.child("geo").getValue().toString().split(",");
+
+                                double latitude = Double.parseDouble(latlong[0]);
+                                double longitude = Double.parseDouble(latlong[1]);
+                                LatLng location = new LatLng(latitude, longitude);
+                                map.addMarker(new MarkerOptions()
+                                        .position(location)
+                                        .title(String.valueOf(ds.child("name").getValue()))
+                                        .anchor(0.5f, 0.5f));
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+
+                            }
+                        });
+
                     }
 
 

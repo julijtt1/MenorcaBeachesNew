@@ -262,7 +262,6 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                Log.e("error", idBeach);
                 if(snapshot.child(idBeach).exists()){
                     imageView.setImageResource(R.drawable.ic_added_list);
                     imageView.setTag("addedToList");

@@ -14,6 +14,8 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -25,10 +27,22 @@ import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
 import org.android.menorcabeaches.R;
+import org.android.menorcabeaches.adapter.PostAdapter;
 import org.android.menorcabeaches.model.Post;
 import org.android.menorcabeaches.model.User;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class ProfileFragment extends Fragment {
+
+    private RecyclerView recyclerView;
+    private RecyclerView recyclerViewSaved;
+    private org.android.menorcabeaches.adapter.PostAdapter PostAdapter;
+    private org.android.menorcabeaches.adapter.PostAdapter SavedPostAdapter;
+    private List<Post> Posts;
+    private List<Post> SavedPosts;
+    private List<String> MySavedPosts;
 
     ImageView image_profile, options;
     TextView posts, followers, following, fullname, bio, username;
@@ -40,8 +54,8 @@ public class ProfileFragment extends Fragment {
     ImageButton my_posts, saved_posts;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
         View view = inflater.inflate(R.layout.fragment_profile, container, false);
 
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -63,7 +77,6 @@ public class ProfileFragment extends Fragment {
 
         userInfo();
         getFollowers();
-        getNumberOfPosts();
 
         if (profileid.equals(firebaseUser.getUid())){
             edit_profile.setText("Edit Profile");
@@ -92,6 +105,54 @@ public class ProfileFragment extends Fragment {
                 }
             }
         });
+
+        //USER POSTS RECYCLER VIEW
+        recyclerView = view.findViewById(R.id.recycler_view);
+        recyclerView.setHasFixedSize(true);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
+        linearLayoutManager.setReverseLayout(true);
+        linearLayoutManager.setStackFromEnd(true);
+
+        recyclerView.setLayoutManager(linearLayoutManager);
+        Posts = new ArrayList<>();
+        PostAdapter = new PostAdapter(getContext(), Posts);
+        recyclerView.setAdapter(PostAdapter);
+
+
+        //SAVED POSTS RECYCLER VIEW
+        recyclerViewSaved = view.findViewById(R.id.recycler_view_save);
+        recyclerViewSaved.setHasFixedSize(true);
+        LinearLayoutManager linearLayoutManager2 = new LinearLayoutManager(getContext());
+        linearLayoutManager2.setReverseLayout(true);
+        linearLayoutManager2.setStackFromEnd(true);
+
+        recyclerViewSaved.setLayoutManager(linearLayoutManager2);
+        SavedPosts = new ArrayList<>();
+        SavedPostAdapter = new PostAdapter(getContext(), SavedPosts);
+        recyclerViewSaved.setAdapter(SavedPostAdapter);
+
+        readUserPosts();
+        readMySavedPosts();
+        getNumberOfPosts();
+
+
+        my_posts.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                recyclerView.setVisibility(View.VISIBLE);
+                recyclerViewSaved.setVisibility(View.GONE);
+
+            }
+        });
+        saved_posts.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                recyclerViewSaved.setVisibility(View.VISIBLE);
+                recyclerView.setVisibility(View.GONE);
+
+            }
+        });
+
 
         return view;
     }
@@ -193,5 +254,84 @@ public class ProfileFragment extends Fragment {
         });
     }
 
+    private void readUserPosts(){
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Posts");
+        reference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                Posts.clear();
+                for (DataSnapshot dataSnapshot : snapshot.getChildren()){
+                    if (dataSnapshot.child("user_id").getValue().equals(firebaseUser.getUid())) {
+                        Post post = dataSnapshot.getValue(Post.class);
+                        Posts.add(post);
+                    }
+                }
+                PostAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+
+    private void readMySavedPosts(){
+        MySavedPosts = new ArrayList<>();
+        DatabaseReference referenceSavedPosts = FirebaseDatabase.getInstance().getReference("SavedPosts").child(firebaseUser.getUid());
+
+        referenceSavedPosts.addValueEventListener(new ValueEventListener() {
+
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                for (DataSnapshot ds : dataSnapshot.getChildren()){
+
+                    MySavedPosts.add(ds.getKey());
+
+                }
+
+                readSavedPosts();
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+
+    private void readSavedPosts(){
+        DatabaseReference referenceSavedPosts = FirebaseDatabase.getInstance().getReference("Posts");
+
+        referenceSavedPosts.addValueEventListener(new ValueEventListener() {
+
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                SavedPosts.clear();
+                for (DataSnapshot ds : dataSnapshot.getChildren()){
+
+                    Post post = ds.getValue(Post.class);
+
+                    for (String id : MySavedPosts){
+                        if (post.getId().equals(id)){
+                            SavedPosts.add(post);
+
+                        }
+                    }
+                    SavedPostAdapter.notifyDataSetChanged();
+                }
+                MySavedPosts.clear();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
+
+    }
 }
 
